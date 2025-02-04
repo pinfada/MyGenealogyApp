@@ -1,0 +1,41 @@
+image:
+  file: .gitpod.Dockerfile
+
+ports:
+  - name: Rails server
+    port: 3000
+    onOpen: open-preview
+  - name: PostgreSQL server
+    port: 5432
+    onOpen: ignore
+  # Ajoutez d'autres ports ici si necessaire, par exemple pour Redis ou un autre service
+
+tasks:
+  - name: Installation des dependances
+    init: |
+      # Installez bundler, yarn et les dependances necessaires ici
+      bundle install &&
+      yarn install &&
+      gp sync-done deps
+    openMode: split-left
+
+  - name: Configuration de la base de donnees et demarrage du serveur
+    init: gp sync-await deps
+    command: |
+      # Creation et migration de la base de donnees, puis demarrage du serveur Rails
+      rake db:create db:migrate &&
+      rails server -b 0.0.0.0
+    openMode: split-right
+
+vscode:
+  extensions:
+    - rebornix.Ruby
+    - bajdzis.vscode-database
+    - esbenp.prettier-vscode
+    - GitHub.vscode-pull-request-github
+    - bradlc.vscode-tailwindcss
+
+jetbrains:
+  rubymine:
+    prebuilds:
+      version: both
